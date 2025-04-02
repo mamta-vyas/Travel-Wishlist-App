@@ -7,7 +7,7 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDWFJWIzgztD2p5BqsmeDAwQSD4067KPOw",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "travel-wishlist-app-1b984.firebaseapp.com",
   projectId: "travel-wishlist-app-1b984",
   storageBucket: "travel-wishlist-app-1b984.firebasestorage.app",
