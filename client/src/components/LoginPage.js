@@ -4,6 +4,7 @@ import { setLoading, setUser, setError } from '../features/userSlice';
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { firebaseApp } from '../config/firebaseConfig';
+import axios from 'axios';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -11,33 +12,85 @@ const LoginPage = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const auth = getAuth(firebaseApp);
 
+  // 📥 EMAIL/PASSWORD LOGIN
   const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(setLoading()); // Start loading
+    dispatch(setLoading());
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      dispatch(setUser({ uid: user.uid, email: user.email, fullName: user.displayName }));
+      const firebaseUser = userCredential.user;
+      const token = await firebaseUser.getIdToken();
+     console.log(token);
+      const response = await axios.post(
+        'http://localhost:5000/api/user/login',
+        {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          fullName: firebaseUser.displayName || '',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const backendUser = response.data;
+
+      dispatch(setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        fullName: firebaseUser.displayName || backendUser.fullName || '',
+        ...backendUser,
+      }));
+
+      localStorage.setItem('authToken', token);
       navigate('/dashboard');
     } catch (error) {
-      dispatch(setError(error.message)); // Show error message
+      dispatch(setError(error?.response?.data?.error || error.message));
     }
   };
 
-  // Google Sign-In function
+  // 🌐 GOOGLE LOGIN
   const handleGoogleLogin = async () => {
+    dispatch(setLoading());
     const provider = new GoogleAuthProvider();
+
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      dispatch(setUser({ uid: user.uid, email: user.email, fullName: user.displayName }));
+      const firebaseUser = result.user;
+      const token = await firebaseUser.getIdToken();
+
+      const response = await axios.post(
+        'http://localhost:5000/api/user/google-login',
+        {
+          email: firebaseUser.email,
+          firebaseUID: firebaseUser.uid,
+          fullName: firebaseUser.displayName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const backendUser = response.data;
+
+      dispatch(setUser({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        fullName: firebaseUser.displayName,
+        ...backendUser,
+      }));
+
+      localStorage.setItem('authToken', token);
       navigate('/dashboard');
     } catch (error) {
-      dispatch(setError(error.message)); // Show error message
+      dispatch(setError(error?.response?.data?.error || error.message));
     }
   };
 
@@ -45,8 +98,9 @@ const LoginPage = () => {
     <form
       onSubmit={handleLogin}
       className="space-y-3 max-w-md mx-auto mt-6"
-      style={{ maxHeight: '60vh' }} // Ensure it takes up no more than 60% of the viewport height
+      style={{ maxHeight: '60vh' }}
     >
+      {/* Email */}
       <div>
         <label htmlFor="email" className="block text-sm font-semibold text-pink-900">Email</label>
         <input
@@ -60,6 +114,7 @@ const LoginPage = () => {
         />
       </div>
 
+      {/* Password */}
       <div>
         <label htmlFor="password" className="block text-sm font-semibold text-pink-900">Password</label>
         <div className="relative">
@@ -82,19 +137,19 @@ const LoginPage = () => {
         </div>
       </div>
 
+      {/* Buttons */}
       <div className="flex flex-col items-center space-y-3 mt-4">
         <button
           type="submit"
-          className="w-3/4 py-2 px-4 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-lg font-bold rounded-full hover:bg-gradient-to-r hover:from-pink-600 hover:to-yellow-600 transition duration-300 focus:outline-none"
+          className="w-3/4 py-2 px-4 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-lg font-bold rounded-full hover:from-pink-600 hover:to-yellow-600 transition duration-300 focus:outline-none"
         >
           Login
         </button>
 
-        {/* Google Login Button */}
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-3/4 py-2 mt-4 px-4 bg-gradient-to-r from-pink-800 to-yellow-700 text-white text-lg font-bold rounded-full hover:bg-gradient-to-r hover:from-pink-900 hover:to-yellow-600 transition duration-300 focus:outline-none transform hover:scale-105 shadow-xl hover:shadow-2xl relative overflow-hidden"
+          className="w-3/4 py-2 mt-4 px-4 bg-gradient-to-r from-pink-800 to-yellow-700 text-white text-lg font-bold rounded-full hover:from-pink-900 hover:to-yellow-600 transition duration-300 focus:outline-none transform hover:scale-105 shadow-xl hover:shadow-2xl relative overflow-hidden"
         >
           Login with Google
           <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-pink-800 to-yellow-700 opacity-30 rounded-full animate-spin"></span>

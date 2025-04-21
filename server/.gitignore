@@ -1,0 +1,6 @@
+serviceAccountKey.json
+
+*.key.json
+*.pem
+
+/node_modules

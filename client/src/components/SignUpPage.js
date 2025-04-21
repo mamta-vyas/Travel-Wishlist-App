@@ -4,6 +4,7 @@ import { setLoading, setUser, setError } from '../features/userSlice';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { firebaseApp } from '../config/firebaseConfig';
+import { updateProfile } from "firebase/auth";
 
 const SignUpPage = () => {
   const [fullName, setFullName] = useState('');
@@ -17,27 +18,52 @@ const SignUpPage = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    dispatch(setLoading()); // Start loading
-
+    dispatch(setLoading());
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await userCredential.user.updateProfile({ displayName: fullName });
-
+  
+      await updateProfile(userCredential.user, {
+        displayName: fullName,
+      });
+  
       const user = auth.currentUser;
-      dispatch(setUser({ uid: user.uid, email: user.email, fullName: user.displayName }));
-
+      const idToken = await user.getIdToken(); // 👈 Get Firebase token here
+  console.log(idToken);
+  console.log(user);
+      const userData = {
+        uid: user.uid,
+        email: user.email,
+        fullName: user.displayName,
+      };
+  
+      dispatch(setUser(userData));
+  
+      const response = await fetch('http://localhost:5000/api/user/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`, // 👈 Send token in headers
+        },
+        body: JSON.stringify(userData),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to register user on server');
+      }
+  
       navigate('/dashboard');
     } catch (error) {
-      dispatch(setError(error.message)); // Show error message
+      console.error('Signup error:', error.message);
+      dispatch(setError(error.message));
     }
   };
+  
+  
 
   return (
-    <form
-      onSubmit={handleSignUp}
-      className="space-y-3 max-w-md mx-auto mt-6" // Reduced space between fields
-      style={{ maxHeight: '60vh' }} // Adjust the height to 60% of the viewport height
-    >
+    <form onSubmit={handleSignUp} className="space-y-3 max-w-md mx-auto mt-6" style={{ maxHeight: '60vh' }}>
       <div>
         <label htmlFor="fullName" className="block text-sm font-semibold text-pink-900">Full Name</label>
         <input
@@ -86,7 +112,6 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      {/* Sign Up Button */}
       <div className="flex flex-col items-center space-y-3 mt-4">
         <button
           type="submit"
