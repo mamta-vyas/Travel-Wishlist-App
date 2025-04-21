@@ -1,70 +1,92 @@
-# Getting Started with Create React App
+# 🌍 Travel Wishlist App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern full-stack Travel Wishlist app built with **React**, **Firebase Authentication**, **Express.js**, and **MongoDB**. It enables users to sign up or log in using **email/password** or **Google provider**, and stores user data in a backend database to track user stats.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🗂 Project Structure
 
-### `npm start`
+. ├── README.md # Project overview and instructions ├── client/ # Frontend - React.js app │ ├── public/ # Static assets │ ├── src/ # Main application code │ │ ├── components/ # Login, SignUp, and UserStats UI components │ │ ├── pages/ # Landing Page │ │ ├── config/ # Firebase configuration │ │ ├── features/ # Redux slice for user │ │ └── app/ # Redux store setup ├── server/ # Backend - Express.js server │ ├── config/ # Firebase Admin SDK setup │ ├── middleware/ # Auth middleware using Firebase │ ├── models/ # MongoDB User schema │ ├── routes/ # Auth and wishlist API endpoints │ └── server.js # Express entry point
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🔐 Authentication Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- 🔹 Firebase Email/Password authentication
+- 🔹 Firebase Google sign-in with provider
+- 🔹 Securely verifies Firebase tokens on backend using Firebase Admin SDK
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠 Tech Stack
 
-### `npm run build`
+### Frontend (React - client)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 🔥 Firebase Authentication
+- 🌐 React + Redux
+- 💨 Tailwind CSS for styling
+- 📊 `UserStats.js` to display total registered users
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Backend (Node.js/Express - server)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- 🔐 Firebase Admin SDK for verifying tokens
+- 🌍 MongoDB for storing registered user info
+- 📁 Mongoose models and RESTful API structure
 
-### `npm run eject`
+---## 📥 How to Run the Project
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 1. Clone the Repository
+git clone https://github.com/mamta-vyas/Travel-Wishlist-App.git
+cd Travel-Wishlist-App
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+2. Setup Firebase (Client)
+Create a Firebase project at firebase.google.com
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Enable Email/Password and Google sign-in methods
 
-## Learn More
+Copy your Firebase config to client/src/config/firebaseConfig.js
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+// firebaseConfig.js
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Setup Firebase Admin (Server)
+Generate a Firebase Admin SDK service account key from Firebase Console
 
-### Code Splitting
+Save it as server/serviceAccountKey.json
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Your firebaseAdmin.js should import this and initialize the admin app
 
-### Analyzing the Bundle Size
+4. Start Client
+cd client
+npm install
+npm run dev
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+5. Start Server
+cd server
+npm install
+npm run dev 
 
-### Making a Progressive Web App
+Ensure MongoDB is running locally or provide a MongoDB Atlas URI in your .env file.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+📈 Features
 
-### Advanced Configuration
+🔐 Secure Firebase login system
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+📡 Backend validation with token middleware
 
-### Deployment
+🧠 MongoDB storage for user info
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+📊 Live user count on landing page (via UserStats.js)
 
-### `npm run build` fails to minify
+🎨 Responsive UI with animations and intuitive forms
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+📧 Contact
+For issues or suggestions, feel free to open an issue or email at mamtavyas1990@gmail.com.
+
+Made with ❤️ using React, Firebase, Express, and MongoDB.
