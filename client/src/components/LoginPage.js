@@ -48,7 +48,7 @@ const LoginPage = () => {
       }));
 
       localStorage.setItem('authToken', token);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       dispatch(setError(error?.response?.data?.error || error.message));
     }
@@ -88,7 +88,7 @@ const LoginPage = () => {
       }));
 
       localStorage.setItem('authToken', token);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       dispatch(setError(error?.response?.data?.error || error.message));
     }

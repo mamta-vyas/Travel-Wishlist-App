@@ -53,7 +53,7 @@ const SignUpPage = () => {
         throw new Error(errorData.error || 'Failed to register user on server');
       }
   
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Signup error:', error.message);
       dispatch(setError(error.message));
