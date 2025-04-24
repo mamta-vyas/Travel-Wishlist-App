@@ -8,6 +8,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import UserInfo from './pages/UserInfo';
 import Wishlist from './pages/Wishlist';
+import DestinationDetails from './components/DestinationDetails ';
 
 function App() {
   const user = useSelector((state) => state.user.user); // Assuming your Redux slice has user.user
@@ -21,6 +22,7 @@ function App() {
             <main className="p-4">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/destination/:id" element={<DestinationDetails />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/userinfo" element={<UserInfo />} />

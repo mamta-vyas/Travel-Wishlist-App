@@ -1,134 +1,46 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-const Dashboard = () => {
-  const [countryCode, setCountryCode] = useState('');
-  const [regionCode, setRegionCode] = useState('');
-  const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  // Add a delay function
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-  const fetchCities = async () => {
-    setLoading(true);
-    setCities([]);
-
-    const headers = {
-      'X-RapidAPI-Key': '80f2f0b70emshf8305cb38b8b533p114677jsn6dbf87ae9f0f',
-      'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
-    };
-
-    const limit = 10;
-    let offset = 0;
-    let hasMore = true;
-    const allCities = [];
-
-    while (hasMore) {
-      const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/countries/${countryCode}/regions/${regionCode}/cities?limit=${limit}&offset=${offset}&sort=-population`;
-
-      try {
-        const response = await fetch(url, { headers });
-
-        if (!response.ok) {
-          console.error(`API Error (Status: ${response.status})`);
-          hasMore = false;
-          break;
-        }
-
-        const result = await response.json();
-        const newCities = result?.data ?? [];
-
-        console.log(`Offset ${offset}: Fetched ${newCities.length} cities`);
-
-        if (newCities.length === 0) {
-          hasMore = false;
-        } else {
-          allCities.push(...newCities);
-          offset += limit;
-        }
-
-        // Optional: Limit total number of cities
-        if (allCities.length >= 100) hasMore = false;
-
-        // Add a delay to prevent hitting the rate limit (1 second delay)
-        await delay(1000);
-
-      } catch (error) {
-        console.error(`Error fetching cities at offset ${offset}:`, error);
-        hasMore = false;
+const Dashboard = ({ cities, loading }) => {
+    
+    if (cities && cities.length > 0) {
+        console.log(cities[0].name, cities[0].latitude, cities[0].longitude);
       }
-    }
 
-    setCities(allCities);
-    setLoading(false);
-  };
+  if (loading) return <p className="text-center text-lg text-blue-700 font-semibold">Loading cities...</p>;
+  if (!cities || cities.length === 0) return <p className="text-center text-gray-600 italic">No cities to display.</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">🌆 City Explorer</h1>
-
-        {/* Form */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Country Code (e.g., IN, US)
-            </label>
-            <input
-              type="text"
-              value={countryCode}
-              onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter country code"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Region Code (e.g., RJ, CA)
-            </label>
-            <input
-              type="text"
-              value={regionCode}
-              onChange={(e) => setRegionCode(e.target.value.toUpperCase())}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              placeholder="Enter region code"
-            />
-          </div>
+    <div className="grid md:grid-cols-2 gap-6 px-4">
+      {cities.map((city) => (
+        <div
+          key={city.id}
+          className="bg-white border rounded-xl p-4 shadow hover:shadow-lg transition"
+        >
+          <h2 className="text-xl font-bold text-blue-700 mb-2">{city.name}</h2>
+          <ul className="text-sm text-gray-700 space-y-1">
+            <li><strong>Population:</strong> {city.population?.toLocaleString() ?? 'N/A'}</li>
+            <li><strong>Latitude:</strong> {city.latitude}</li>
+            <li><strong>Longitude:</strong> {city.longitude}</li>
+            <li><strong>Elevation (m):</strong> {city.elevationMeters ?? 'N/A'}</li>
+          </ul>
+          {city.name && city.latitude && city.longitude && (
+  <div className="mt-4 text-right">
+    <Link
+      to={`/destination/${city.id}`}
+      state={{
+        cityName: city.name,
+        lat: city.latitude,
+        lon: city.longitude,
+      }}
+      className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition"
+    >
+      View More
+    </Link>
+  </div>
+)}
         </div>
-
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={fetchCities}
-            disabled={loading}
-            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 transition ${
-              loading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            🔍 {loading ? 'Searching...' : 'Search Cities'}
-          </button>
-        </div>
-
-        {/* Results */}
-        {loading ? (
-          <p className="text-center text-lg text-blue-700 font-semibold">Loading cities...</p>
-        ) : cities.length === 0 ? (
-          <p className="text-center text-gray-600 italic">No cities to display.</p>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            {cities.map((city) => (
-              <div key={city.id} className="bg-white border rounded-xl p-4 shadow hover:shadow-lg transition">
-                <h2 className="text-xl font-bold text-blue-700 mb-2">{city.name}</h2>
-                <ul className="text-sm text-gray-700 space-y-1">
-                  <li><strong>Population:</strong> {city.population?.toLocaleString() ?? 'N/A'}</li>
-                  <li><strong>Latitude:</strong> {city.latitude}</li>
-                  <li><strong>Longitude:</strong> {city.longitude}</li>
-                  <li><strong>Elevation (m):</strong> {city.elevationMeters ?? 'N/A'}</li>
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      ))}
     </div>
   );
 };
