@@ -88,34 +88,45 @@ const DestinationDetails = () => {
     };
 
     fetchAll();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lat, lon, cityName]);
 
   // ✅ Leaflet Map Setup
+  // Effect to initialize the map when lat or lon changes
   useEffect(() => {
-    if (!lat || !lon) return; // Don't proceed if lat or lon is missing.
-    
-    // Check if the map container is available before initializing.
+    if (!lat || !lon) return;  // Don't proceed if lat or lon are missing
+
+    // Check if the map container is available before initializing
     if (mapRef.current && !leafletMap.current) {
+      // Initialize the map with the lat/lon
       leafletMap.current = L.map(mapRef.current).setView([lat, lon], 13);
-      
+
       // Add tile layer for the map
       L.tileLayer('https://api.maptiler.com/maps/landscape/{z}/{x}/{y}@2x.png?key=DApIOe9jZnh4iAClke33', {
         tileSize: 512,
         zoomOffset: -1,
         attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }).addTo(leafletMap.current);
-    
+
       // Add a marker for the current location
       const marker = L.marker([lat, lon]).addTo(leafletMap.current);
       marker.bindPopup(`<b>You're here!</b><br>Lat: ${lat}, Lon: ${lon}`).openPopup();
     }
-  }, [lat, lon]); // Re-run effect when lat or lon changes
-  
+
+    // Cleanup map instance when component unmounts or lat/lon change
+    return () => {
+      if (leafletMap.current) {
+        leafletMap.current.remove();
+        leafletMap.current = null;
+      }
+    };
+  }, [lat, lon]);  // Re-run effect when lat or lon changes
+
 
   if (loading) return <div className="text-center mt-10">Fetching data...</div>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold text-blue-800 mb-4">{cityName}</h1>
 
       {/* Unsplash Images */}

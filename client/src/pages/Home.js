@@ -7,17 +7,17 @@ const Home = () => {
   const [regionCode, setRegionCode] = useState('');
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  // const [errorMsg, setErrorMsg] = useState('');
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const fetchCities = useCallback(async () => {
-    setErrorMsg('');
+    // setErrorMsg('');
     setLoading(true);
     setCities([]);
   
     if (!countryCode || !regionCode) {
-      setErrorMsg('Please enter both country and region codes.');
+      // setErrorMsg('Please enter both country and region codes.');
       setLoading(false);
       return;
     }
@@ -39,7 +39,7 @@ const Home = () => {
         const response = await fetch(url, { headers });
         if (!response.ok) {
           console.error(`API Error (Status: ${response.status})`);
-          setErrorMsg(`API Error: ${response.status} - ${response.statusText}`);
+          // setErrorMsg(`API Error: ${response.status} - ${response.statusText}`);
           hasMore = false;
           break;
         }
@@ -59,7 +59,7 @@ const Home = () => {
         await delay(1000);
       } catch (error) {
         console.error(`Error fetching cities:`, error);
-        setErrorMsg('An unexpected error occurred while fetching cities.');
+        // setErrorMsg('An unexpected error occurred while fetching cities.');
         hasMore = false;
       }
     }
@@ -67,9 +67,7 @@ const Home = () => {
     setCities(allCities);
     setLoading(false);
   }, [countryCode, regionCode]);
-  
 
-  // ✅ Optional Debounce Utility (you can use this if you want fetch on input change in the future)
   const debounce = (func, delay) => {
     let timeout;
     return (...args) => {
@@ -77,7 +75,9 @@ const Home = () => {
       timeout = setTimeout(() => func(...args), delay);
     };
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedFetchCities = useCallback(debounce(fetchCities, 1000), [countryCode, regionCode]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-6">
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8">
@@ -106,16 +106,11 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ✅ Error Message UI */}
-        {errorMsg && (
-          <div className="text-red-600 text-sm text-center mb-4">
-            ⚠️ {errorMsg}
-          </div>
-        )}
+        {/* ❌ Removed Error Message UI */}
 
         <div className="flex justify-center mb-6">
           <button
-          onClick={debouncedFetchCities}
+            onClick={debouncedFetchCities}
             disabled={loading}
             className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 transition ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
