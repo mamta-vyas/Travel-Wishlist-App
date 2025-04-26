@@ -1,5 +1,4 @@
-// src/pages/Home.js
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import Dashboard from '../components/Dashboard';
 
 const Home = () => {
@@ -7,90 +6,127 @@ const Home = () => {
   const [regionCode, setRegionCode] = useState('');
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  const debounce = (func, delayTime) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), delayTime);
+    };
+  };
+
   const fetchCities = useCallback(async () => {
-    // setErrorMsg('');
+    setErrorMsg('');
     setLoading(true);
     setCities([]);
-  
-    if (!countryCode || !regionCode) {
-      // setErrorMsg('Please enter both country and region codes.');
+
+    const trimmedCountry = countryCode.trim().toUpperCase();
+    const trimmedRegion = regionCode.trim().toUpperCase();
+
+    if (!trimmedCountry || !trimmedRegion) {
+      setErrorMsg('Please enter both country and region codes.');
       setLoading(false);
       return;
     }
-  
+
     const headers = {
       'X-RapidAPI-Key': '80f2f0b70emshf8305cb38b8b533p114677jsn6dbf87ae9f0f',
       'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
     };
-  
+
     const limit = 10;
     let offset = 0;
     let hasMore = true;
     const allCities = [];
-  
+
     while (hasMore) {
-      const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/countries/${countryCode}/regions/${regionCode}/cities?limit=${limit}&offset=${offset}&sort=-population`;
-  
+      const url = `https://wft-geo-db.p.rapidapi.com/v1/geo/countries/${trimmedCountry}/regions/${trimmedRegion}/cities?limit=${limit}&offset=${offset}&sort=-population`;
+
       try {
         const response = await fetch(url, { headers });
+
+        if (response.status === 429) {
+          setErrorMsg('Rate limit exceeded. Retrying in 5 seconds...');
+          await delay(5000);
+          continue;
+        }
+
         if (!response.ok) {
-          console.error(`API Error (Status: ${response.status})`);
-          // setErrorMsg(`API Error: ${response.status} - ${response.statusText}`);
+          setErrorMsg(`API Error: ${response.status} - ${response.statusText}`);
           hasMore = false;
           break;
         }
-  
+
         const result = await response.json();
         const newCities = result?.data ?? [];
-  
+
         if (newCities.length === 0) {
           hasMore = false;
         } else {
           allCities.push(...newCities);
           offset += limit;
         }
-  
+
         if (allCities.length >= 100) hasMore = false;
-  
+
         await delay(1000);
       } catch (error) {
-        console.error(`Error fetching cities:`, error);
-        // setErrorMsg('An unexpected error occurred while fetching cities.');
+        console.error('Error fetching cities:', error);
+        setErrorMsg('An unexpected error occurred while fetching cities.');
         hasMore = false;
       }
     }
-  
+
     setCities(allCities);
+    sessionStorage.setItem('cities', JSON.stringify(allCities));
+    sessionStorage.setItem('countryCode', trimmedCountry);
+    sessionStorage.setItem('regionCode', trimmedRegion);
+
     setLoading(false);
   }, [countryCode, regionCode]);
 
-  const debounce = (func, delay) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), delay);
-    };
+  const debouncedFetchCities = useMemo(() => debounce(fetchCities, 1000), [fetchCities]);
+
+  const handleSearchClick = () => {
+    debouncedFetchCities();
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFetchCities = useCallback(debounce(fetchCities, 1000), [countryCode, regionCode]);
+
+  useEffect(() => {
+    const savedCities = sessionStorage.getItem('cities');
+    const savedCountryCode = sessionStorage.getItem('countryCode');
+    const savedRegionCode = sessionStorage.getItem('regionCode');
+
+    if (savedCities) {
+      setCities(JSON.parse(savedCities));
+    }
+    if (savedCountryCode) {
+      setCountryCode(savedCountryCode);
+    }
+    if (savedRegionCode) {
+      setRegionCode(savedRegionCode);
+    }
+  }, []); 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 p-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-center text-blue-800 mb-8">🌆 City Explorer</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl px-6 py-8 sm:px-10">
+        <h1 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8">🌆 City Explorer</h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+        <p className="text-center text-sm text-gray-600 mb-4">
+          Please enter the <strong>country</strong> and <strong>region</strong> codes of the place you want to explore.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Country Code (e.g., IN, US)</label>
             <input
               type="text"
               value={countryCode}
               onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Enter country code"
             />
           </div>
@@ -100,19 +136,28 @@ const Home = () => {
               type="text"
               value={regionCode}
               onChange={(e) => setRegionCode(e.target.value.toUpperCase())}
-              className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-purple-500"
               placeholder="Enter region code"
             />
           </div>
         </div>
 
-        {/* ❌ Removed Error Message UI */}
+        {errorMsg && <div className="text-red-600 text-center mb-4">{errorMsg}</div>}
+
+        {/* Add professional line while loading */}
+        {loading && (
+      <p className="text-center text-sm font-semibold mb-4 bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-transparent bg-clip-text animate-pulse">
+      ⏳ Please bear with us as we search for the cities. It might take a few moments. Thank you for your patience! 🌍
+    </p>
+    
+     
+        )}
 
         <div className="flex justify-center mb-6">
           <button
-            onClick={debouncedFetchCities}
+            onClick={handleSearchClick}
             disabled={loading}
-            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 transition ${
+            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >

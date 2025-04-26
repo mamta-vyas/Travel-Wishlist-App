@@ -1,36 +1,71 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromWishlist } from '../features/wishlistSlice'; // make sure path is correct
+import { addToWishlist, removeFromWishlist, clearWishlist } from '../features/wishlistSlice';
 
 const Wishlist = () => {
-  const wishlist = useSelector((state) => state.wishlist.wishlist);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user); // Get the logged-in user from Redux state
+  const wishlist = useSelector((state) => state.wishlist.wishlists[user?.uid] || []); // Get the wishlist for the logged-in user
+
+  // Handle adding a city to the wishlist
+  const handleAddToWishlist = (city) => {
+    if (user?.uid) {
+      dispatch(addToWishlist({ userId: user.uid, city }));  // Pass userId to the action
+    }
+  };
+
+  // Handle removing a city from the wishlist
+  const handleRemoveFromWishlist = (cityId) => {
+    if (user?.uid) {
+      dispatch(removeFromWishlist({ userId: user.uid, cityId }));  // Pass userId to the action
+    }
+  };
+
+  // Handle clearing the wishlist
+  const handleClearWishlist = () => {
+    if (user?.uid) {
+      dispatch(clearWishlist({ userId: user.uid }));  // Pass userId to the action
+    }
+  };
 
   return (
-    <div className="px-4 py-6">
-      <h2 className="text-2xl font-bold mb-4 text-center text-indigo-700">Your Wishlist</h2>
-      {wishlist.length === 0 ? (
-        <p className="text-center text-gray-600">No destinations in wishlist.</p>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          {wishlist.map((city) => (
-            <div key={city.id} className="border p-4 rounded-md shadow">
-              <h3 className="text-lg font-semibold text-blue-700">{city.name}</h3>
-              <p className="text-sm text-gray-700">Population: {city.population?.toLocaleString() ?? 'N/A'}</p>
-              <p className="text-sm text-gray-700">Latitude: {city.latitude}</p>
-              <p className="text-sm text-gray-700">Longitude: {city.longitude}</p>
+    <div className="p-4">
+      <h3 className="text-2xl font-bold mb-6 text-center">Your Wishlist</h3>
+      
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {wishlist.map((item) => (
+          <div key={item.id} className="border p-4 rounded-xl shadow hover:shadow-lg transition">
+            <h4 className="text-lg font-semibold text-blue-700 mb-2">{item.name}</h4>
+            <p><strong>Population:</strong> {item.population?.toLocaleString() ?? 'N/A'}</p>
+            <p><strong>Latitude:</strong> {item.latitude}</p>
+            <p><strong>Longitude:</strong> {item.longitude}</p>
+            <p><strong>Elevation:</strong> {item.elevationMeters ?? 'N/A'}</p>
+            <div className="mt-4 flex justify-end">
               <button
-                onClick={() => dispatch(removeFromWishlist(city.id))}
-                className="mt-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition"
+                onClick={() => handleRemoveFromWishlist(item.id)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
               >
                 Remove
               </button>
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+  
+      {wishlist.length > 0 && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={handleClearWishlist}
+            className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md"
+          >
+            Clear Wishlist
+          </button>
         </div>
       )}
     </div>
   );
+  
+  
 };
 
 export default Wishlist;

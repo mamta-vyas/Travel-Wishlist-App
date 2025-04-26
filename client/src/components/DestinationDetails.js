@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const DestinationDetails = () => {
   const location = useLocation();
   const { cityName, lat, lon } = location.state || {};
-
+  const navigate = useNavigate();
   const [weather, setWeather] = useState(null);
   const [images, setImages] = useState([]);
   const [places, setPlaces] = useState([]);
@@ -94,78 +94,96 @@ const DestinationDetails = () => {
   // ✅ Leaflet Map Setup
   // Effect to initialize the map when lat or lon changes
   useEffect(() => {
-    if (!lat || !lon) return;  // Don't proceed if lat or lon are missing
-
-    // Check if the map container is available before initializing
-    if (mapRef.current && !leafletMap.current) {
-      // Initialize the map with the lat/lon
-      leafletMap.current = L.map(mapRef.current).setView([lat, lon], 13);
-
-      // Add tile layer for the map
-      L.tileLayer('https://api.maptiler.com/maps/landscape/{z}/{x}/{y}@2x.png?key=DApIOe9jZnh4iAClke33', {
-        tileSize: 512,
-        zoomOffset: -1,
-        attribution: '&copy; <a href="https://www.maptiler.com/copyright/">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-      }).addTo(leafletMap.current);
-
-      // Add a marker for the current location
-      const marker = L.marker([lat, lon]).addTo(leafletMap.current);
-      marker.bindPopup(`<b>You're here!</b><br>Lat: ${lat}, Lon: ${lon}`).openPopup();
-    }
-
-    // Cleanup map instance when component unmounts or lat/lon change
+    if (!lat || !lon) return;
+  
+    // Add a delay before initializing the map
+    const mapDelay = setTimeout(() => {
+      if (mapRef.current && !leafletMap.current) {
+        leafletMap.current = L.map(mapRef.current, {
+          center: [lat, lon],
+          zoom: 14,
+          scrollWheelZoom: true,
+          zoomControl: true,
+          crs: L.CRS.EPSG3857,
+        });
+  
+        L.tileLayer(
+          'https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=DApIOe9jZnh4iAClke33',
+          {
+            attribution: '&copy; OpenStreetMap contributors &copy; MapTiler',
+          }
+        ).addTo(leafletMap.current);
+      }
+  
+      if (leafletMap.current) {
+        leafletMap.current.setView([lat, lon], 14);
+        const marker = L.marker([lat, lon]).addTo(leafletMap.current);
+        marker.bindPopup(`<b>You're here!</b><br>Lat: ${lat}, Lon: ${lon}`).openPopup();
+  
+        setTimeout(() => {
+          leafletMap.current.invalidateSize();
+        }, 300);
+      }
+    }, 3000); // Delay of 1000ms (1 second)
+  
     return () => {
+      clearTimeout(mapDelay); // Cleanup the timeout on component unmount or when lat/lon changes
       if (leafletMap.current) {
         leafletMap.current.remove();
         leafletMap.current = null;
       }
     };
-  }, [lat, lon]);  // Re-run effect when lat or lon changes
-
+  }, [lat, lon]);
+  
 
   if (loading) return <div className="text-center mt-10">Fetching data...</div>;
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold text-blue-800 mb-4">{cityName}</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+      {/* Back to Dashboard */}
+      <button
+        onClick={() => navigate('/')}
+        className="mb-4 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+      >
+        ← Back to Home
+      </button>
 
-      {/* Unsplash Images */}
+      {/* City Header */}
+      <h1 className="text-3xl font-bold text-pink-600">{cityName}</h1>
+
+      {/* Images */}
       {images.length > 0 && (
-        <section className="mb-8">
-          <h2 className="text-xl font-semibold mb-2">Images</h2>
+        <section className="bg-gradient-to-br from-pink-50 to-red-100 rounded-xl p-6 shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">📸 City Views</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {images.map((img) => (
               <img
                 key={img.id}
                 src={img.urls.small}
                 alt={cityName}
-                className="w-full h-48 object-cover rounded-lg"
+                className="rounded-lg object-cover h-48 w-full hover:scale-105 transition-transform duration-300"
               />
             ))}
           </div>
         </section>
       )}
 
-      {/* Weather Info */}
+      {/* Weather */}
       {weather?.main && (
-        <section className="bg-white rounded-lg p-6 shadow mb-8 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-blue-700">
-                {weather.weather[0].main}
-              </h3>
-              <p className="text-gray-700 capitalize">
-                {weather.weather[0].description}
-              </p>
-            </div>
+        <section className="bg-blue-50 border border-blue-200 rounded-xl p-6 shadow-md space-y-4">
+          <h2 className="text-xl font-semibold text-blue-700">🌦️ Weather Info</h2>
+          <div className="flex items-center gap-4">
             <img
               src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-              alt="Weather Icon"
+              alt="Weather"
               className="w-16 h-16"
             />
+            <div>
+              <p className="text-lg font-semibold text-gray-800">{weather.weather[0].main}</p>
+              <p className="text-gray-600 capitalize">{weather.weather[0].description}</p>
+            </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-4 text-sm text-gray-800">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-gray-700 text-sm">
             <p><strong>Temperature:</strong> {weather.main.temp}°C</p>
             <p><strong>Feels Like:</strong> {weather.main.feels_like}°C</p>
             <p><strong>Min Temp:</strong> {weather.main.temp_min}°C</p>
@@ -176,17 +194,22 @@ const DestinationDetails = () => {
         </section>
       )}
 
-      {/* Foursquare Nearby Places */}
+      {/* Places */}
       {places.length > 0 && (
-        <section className="mt-6">
-          <h2 className="text-xl font-semibold mb-2">Nearby Places</h2>
-          <ul className="space-y-4">
+        <section className="bg-gradient-to-r from-[#e0f7fa] to-[#fce4ec] rounded-xl p-6 shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">🏙️ Nearby Places</h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {places.map((place) => (
-              <li key={place.fsq_id} className="p-4 bg-white rounded shadow">
-                <p><strong>Name:</strong> {place.name}</p>
-                <p><strong>Category:</strong> {place.categories?.[0]?.name}</p>
-                <p><strong>Distance:</strong> {place.distance} m</p>
-                <p><strong>Address:</strong> {place.location?.formatted_address || place.location?.address}</p>
+              <li
+                key={place.fsq_id}
+                className="p-4 rounded-lg border border-gray-200 bg-white shadow hover:shadow-lg transition"
+              >
+                <p className="font-semibold text-gray-900">{place.name}</p>
+                <p className="text-sm text-gray-600">{place.categories?.[0]?.name}</p>
+                <p className="text-sm text-gray-600">Distance: {place.distance} m</p>
+                <p className="text-sm text-gray-600">
+                  {place.location?.formatted_address || place.location?.address}
+                </p>
               </li>
             ))}
           </ul>
@@ -194,14 +217,15 @@ const DestinationDetails = () => {
       )}
 
       {/* Map */}
-      <section className="mt-10">
-        <h2 className="text-2xl font-bold text-gray-800 mb-3">📍 Map View</h2>
-        <div
-          ref={mapRef}
-          className="rounded-2xl border-4 border-blue-400 shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
-          style={{ height: '420px', width: '100%' }}
-        ></div>
-      </section>
+      <section className="mx-auto p-4">
+  <h2 className="text-xl font-semibold text-gray-800 mb-3">📍 Map View</h2>
+  <div
+    ref={mapRef}
+    className="w-full max-w-full h-72 sm:h-[500px] rounded-xl border-4 border-blue-300 shadow"
+  />
+</section>
+
+
     </div>
   );
 };
