@@ -17,7 +17,8 @@ const DestinationDetails = () => {
 
   // ✅ WeatherAPI Fetch
   const fetchWeather = async () => {
-    const weatherApiKey = '0c40cb6e53e7910de0010ff49e45940e';
+    const weatherApiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
   
     if (!lat || !lon) {
       console.warn("Latitude or longitude is missing.");
@@ -42,7 +43,7 @@ const DestinationDetails = () => {
   
   // ✅ Unsplash Image Fetch
   const fetchImages = async () => {
-    const unsplashKey = 'du-zw8KiJ1MFdENQO82AV5Is9kCt9eJSbe-Eg8wNsa8';
+    const unsplashKey = process.env.REACT_APP_UNSPLASH_API_KEY;
     try {
       const res = await fetch(
         `https://api.unsplash.com/search/photos?query=${cityName}&client_id=${unsplashKey}`
@@ -56,7 +57,7 @@ const DestinationDetails = () => {
 
   // ✅ Foursquare Fetch
   const fetchFoursquarePlaces = async () => {
-    const fsqKey = 'fsq3KGNQkWc01jg02UE3dVoGsZV60XKg1NnPMBEiEB33v+8=';
+    const fsqKey = process.env.REACT_APP_FSQ_API_KEY;
     try {
       const res = await fetch(
         `https://api.foursquare.com/v3/places/search?ll=${lat},${lon}&radius=3000&limit=6`,
@@ -94,6 +95,8 @@ const DestinationDetails = () => {
   // ✅ Leaflet Map Setup
   // Effect to initialize the map when lat or lon changes
   useEffect(() => {
+    const mapTilerKey = process.env.REACT_APP_MAPTILER_API_KEY;
+    
     if (!lat || !lon) return;
   
     // Add a delay before initializing the map
@@ -108,7 +111,7 @@ const DestinationDetails = () => {
         });
   
         L.tileLayer(
-          'https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=DApIOe9jZnh4iAClke33',
+          `https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=${mapTilerKey}`,
           {
             attribution: '&copy; OpenStreetMap contributors &copy; MapTiler',
           }

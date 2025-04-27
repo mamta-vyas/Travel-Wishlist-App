@@ -4,7 +4,6 @@ import storage from 'redux-persist/lib/storage'; // Local storage
 import userReducer from '../features/userSlice';
 import wishlistReducer from '../features/wishlistSlice';
 
-
 const persistConfig = {
   key: 'root',
   storage,
@@ -18,6 +17,19 @@ export const store = configureStore({
     user: userReducer,
     wishlist: persistedWishlistReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [
+          'persist/PERSIST',
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/FLUSH',
+          'persist/PURGE',
+          'persist/REGISTER',
+        ],
+      },
+    }),
 });
 
 export const persistor = persistStore(store);

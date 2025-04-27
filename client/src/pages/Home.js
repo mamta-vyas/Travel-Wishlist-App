@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import Dashboard from '../components/Dashboard';
+import SearchBar from '../components/SearchBar';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
   const [countryCode, setCountryCode] = useState('');
@@ -7,6 +9,9 @@ const Home = () => {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [hasLoadedSessionData, setHasLoadedSessionData] = useState(false);
+
+  const user = useSelector((state) => state.user.user);
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -33,7 +38,7 @@ const Home = () => {
     }
 
     const headers = {
-      'X-RapidAPI-Key': '80f2f0b70emshf8305cb38b8b533p114677jsn6dbf87ae9f0f',
+      'X-RapidAPI-Key': process.env.REACT_APP_RAPIDAPI_KEY,
       'X-RapidAPI-Host': 'wft-geo-db.p.rapidapi.com',
     };
 
@@ -94,31 +99,53 @@ const Home = () => {
     debouncedFetchCities();
   };
 
+  // on login/logout reset everything
+  useEffect(() => {
+    if (!user) {
+      setCountryCode('');
+      setRegionCode('');
+      setCities([]);
+      sessionStorage.removeItem('cities');
+      sessionStorage.removeItem('countryCode');
+      sessionStorage.removeItem('regionCode');
+      setHasLoadedSessionData(false);
+    }
+  }, [user]);
+
+  // on page load, load from sessionStorage
   useEffect(() => {
     const savedCities = sessionStorage.getItem('cities');
     const savedCountryCode = sessionStorage.getItem('countryCode');
     const savedRegionCode = sessionStorage.getItem('regionCode');
 
-    if (savedCities) {
+    if (savedCities && savedCountryCode && savedRegionCode) {
       setCities(JSON.parse(savedCities));
-    }
-    if (savedCountryCode) {
       setCountryCode(savedCountryCode);
-    }
-    if (savedRegionCode) {
       setRegionCode(savedRegionCode);
     }
-  }, []); 
+    setHasLoadedSessionData(true);
+  }, []); // This effect runs once when the component is first mounted
+
+  // when inputs are cleared (after initial load), reset cities too
+  useEffect(() => {
+    if (hasLoadedSessionData && !countryCode && !regionCode) {
+      setCities([]);
+      sessionStorage.removeItem('cities');
+      sessionStorage.removeItem('countryCode');
+      sessionStorage.removeItem('regionCode');
+    }
+  }, [countryCode, regionCode, hasLoadedSessionData]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 px-4 sm:px-6 lg:px-8 py-6">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl px-6 py-8 sm:px-10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 px-4 sm:px-6 lg:px-8 py-2 mt-0">
+      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-xl px-6 py-2 sm:px-10">
         <h1 className="text-2xl sm:text-3xl font-bold text-center text-blue-800 mb-8">🌆 City Explorer</h1>
 
-        <p className="text-center text-sm text-gray-600 mb-4">
+        <p className="text-center text-lg text-gray-600 mb-4">
           Please enter the <strong>country</strong> and <strong>region</strong> codes of the place you want to explore.
         </p>
 
+        {/* Country and Region Code Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Country Code (e.g., IN, US)</label>
@@ -142,28 +169,34 @@ const Home = () => {
           </div>
         </div>
 
-        {errorMsg && <div className="text-red-600 text-center mb-4">{errorMsg}</div>}
-
         {/* Add professional line while loading */}
         {loading && (
-      <p className="text-center text-sm font-semibold mb-4 bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-transparent bg-clip-text animate-pulse">
-      ⏳ Please bear with us as we search for the cities. It might take a few moments. Thank you for your patience! 🌍
-    </p>
-    
-     
+          <p className="text-center text-sm font-semibold mb-4 bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-transparent bg-clip-text animate-pulse">
+            ⏳ Please bear with us as we search for the cities. It might take a few moments. Thank you for your patience! 🌍
+          </p>
         )}
 
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <button
             onClick={handleSearchClick}
             disabled={loading}
-            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 ${
+            className={`w-1/3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 ${
               loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
             🔍 {loading ? 'Searching...' : 'Search Cities'}
           </button>
         </div>
+
+        {/* Conditionally render the SearchBar only when needed */}
+        {!countryCode || !regionCode ? (
+          <div className="text-center">
+            <p className="text-lg font-bold text-gray-900 ">
+              Don't know the country/region code? You can search for it or ask for help!
+            </p>
+            <SearchBar />
+          </div>
+        ) : null}
 
         <Dashboard cities={cities} loading={loading} />
       </div>

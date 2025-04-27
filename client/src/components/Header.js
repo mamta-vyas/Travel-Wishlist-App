@@ -30,7 +30,8 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-pink-500 to-yellow-400 shadow-md p-4">
+    <header className="bg-gradient-to-r from-pink-500 to-yellow-400 shadow-md px-4 py-4
+">
       <nav className="container mx-auto flex items-center justify-between">
         <h1 className="text-white text-2xl font-bold">Travel Wishlist 🌍</h1>
         <ul className="flex gap-4">
@@ -40,8 +41,8 @@ const Header = () => {
                 to={link.to}
                 className={({ isActive }) =>
                   isActive
-                    ? 'text-white font-semibold border-b-2 border-white pb-1'
-                    : 'text-white hover:text-gray-100 transition'
+                    ? 'text-white text-xl font-semibold border-b-2 border-white pb-0'
+                    : 'text-white font-bold text-xl hover:text-gray-100 transition'
                 }
               >
                 {link.label}
@@ -52,7 +53,7 @@ const Header = () => {
         {/* Add the logout button */}
         <button
           onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition"
+          className="bg-red-500 text-white px-4 py-0 rounded-full hover:bg-red-600 transition"
         >
           Logout
         </button>

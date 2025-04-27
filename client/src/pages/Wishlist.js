@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToWishlist, removeFromWishlist, clearWishlist } from '../features/wishlistSlice';
 
@@ -6,6 +6,32 @@ const Wishlist = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user); // Get the logged-in user from Redux state
   const wishlist = useSelector((state) => state.wishlist.wishlists[user?.uid] || []); // Get the wishlist for the logged-in user
+
+  // Update localStorage whenever the wishlist changes
+  useEffect(() => {
+    if (user?.uid) {
+      const storedWishlist = localStorage.getItem(`wishlist_${user.uid}`);
+      if (storedWishlist) {
+        const parsedWishlist = JSON.parse(storedWishlist);
+        parsedWishlist.forEach((item) => {
+          dispatch(addToWishlist({ userId: user.uid, city: item }));
+        });
+      }
+    }
+  }, [dispatch, user?.uid]);
+  
+  // Initialize wishlist from localStorage on component mount
+  useEffect(() => {
+    if (user?.uid) {
+      const storedWishlist = localStorage.getItem(`wishlist_${user.uid}`);
+      if (storedWishlist) {
+        const parsedWishlist = JSON.parse(storedWishlist);
+        parsedWishlist.forEach((item) => {
+          dispatch(addToWishlist({ userId: user.uid, city: item }));
+        });
+      }
+    }
+  }, [dispatch, user?.uid]);
 
   // Handle adding a city to the wishlist
   const handleAddToWishlist = (city) => {
@@ -64,8 +90,6 @@ const Wishlist = () => {
       )}
     </div>
   );
-  
-  
 };
 
 export default Wishlist;
