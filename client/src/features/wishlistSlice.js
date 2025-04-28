@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   // Store the wishlist for each user, keyed by user ID (uid)
@@ -6,7 +6,7 @@ const initialState = {
 };
 
 const wishlistSlice = createSlice({
-  name: 'wishlist',
+  name: "wishlist",
   initialState,
   reducers: {
     addToWishlist: (state, action) => {
@@ -18,9 +18,11 @@ const wishlistSlice = createSlice({
       }
 
       // Check if the city is already in the user's wishlist
-      const exists = state.wishlists[userId].find((item) => item.id === city.id);
+      const exists = state.wishlists[userId].find(
+        (item) => item.id === city.id
+      );
       if (!exists) {
-        state.wishlists[userId].push(city);  // Add to wishlist if not already there
+        state.wishlists[userId].push(city); // Add to wishlist if not already there
       }
     },
     removeFromWishlist: (state, action) => {
@@ -28,7 +30,9 @@ const wishlistSlice = createSlice({
 
       // Remove the city from the user's wishlist if exists
       if (state.wishlists[userId]) {
-        state.wishlists[userId] = state.wishlists[userId].filter((item) => item.id !== cityId);
+        state.wishlists[userId] = state.wishlists[userId].filter(
+          (item) => item.id !== cityId
+        );
       }
     },
     clearWishlist: (state, action) => {
@@ -42,6 +46,7 @@ const wishlistSlice = createSlice({
   },
 });
 
-export const { addToWishlist, removeFromWishlist, clearWishlist } = wishlistSlice.actions;
+export const { addToWishlist, removeFromWishlist, clearWishlist } =
+  wishlistSlice.actions;
 
 export default wishlistSlice.reducer;

@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { setLoading, setUser, setError } from '../features/userSlice';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { firebaseApp } from '../config/firebaseConfig';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setLoading, setUser, setError } from "../features/userSlice";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { firebaseApp } from "../config/firebaseConfig";
+import axios from "axios";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,16 +25,20 @@ const LoginPage = () => {
     dispatch(setLoading());
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const firebaseUser = userCredential.user;
       const token = await firebaseUser.getIdToken();
-     console.log(token);
+      console.log(token);
       const response = await axios.post(
-        'http://localhost:5000/api/user/login',
+        "http://localhost:5000/api/user/login",
         {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          fullName: firebaseUser.displayName || '',
+          fullName: firebaseUser.displayName || "",
         },
         {
           headers: {
@@ -40,15 +49,17 @@ const LoginPage = () => {
 
       const backendUser = response.data;
 
-      dispatch(setUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        fullName: firebaseUser.displayName || backendUser.fullName || '',
-        ...backendUser,
-      }));
+      dispatch(
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          fullName: firebaseUser.displayName || backendUser.fullName || "",
+          ...backendUser,
+        })
+      );
 
-      localStorage.setItem('authToken', token);
-      navigate('/');
+      localStorage.setItem("authToken", token);
+      navigate("/");
     } catch (error) {
       dispatch(setError(error?.response?.data?.error || error.message));
     }
@@ -65,7 +76,7 @@ const LoginPage = () => {
       const token = await firebaseUser.getIdToken();
 
       const response = await axios.post(
-        'http://localhost:5000/api/user/google-login',
+        "http://localhost:5000/api/user/google-login",
         {
           email: firebaseUser.email,
           firebaseUID: firebaseUser.uid,
@@ -80,15 +91,17 @@ const LoginPage = () => {
 
       const backendUser = response.data;
 
-      dispatch(setUser({
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        fullName: firebaseUser.displayName,
-        ...backendUser,
-      }));
+      dispatch(
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          fullName: firebaseUser.displayName,
+          ...backendUser,
+        })
+      );
 
-      localStorage.setItem('authToken', token);
-      navigate('/');
+      localStorage.setItem("authToken", token);
+      navigate("/");
     } catch (error) {
       dispatch(setError(error?.response?.data?.error || error.message));
     }
@@ -98,11 +111,14 @@ const LoginPage = () => {
     <form
       onSubmit={handleLogin}
       className="space-y-3 max-w-md mx-auto mt-6"
-      style={{ maxHeight: '60vh' }}
-    >
+      style={{ maxHeight: "60vh" }}>
       {/* Email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-pink-900">Email</label>
+        <label
+          htmlFor="email"
+          className="block text-sm font-semibold text-pink-900">
+          Email
+        </label>
         <input
           type="email"
           id="email"
@@ -116,10 +132,14 @@ const LoginPage = () => {
 
       {/* Password */}
       <div>
-        <label htmlFor="password" className="block text-sm font-semibold text-pink-900">Password</label>
+        <label
+          htmlFor="password"
+          className="block text-sm font-semibold text-pink-900">
+          Password
+        </label>
         <div className="relative">
           <input
-            type={isPasswordVisible ? 'text' : 'password'}
+            type={isPasswordVisible ? "text" : "password"}
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -130,9 +150,8 @@ const LoginPage = () => {
           <button
             type="button"
             onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 text-xs"
-          >
-            {isPasswordVisible ? 'Hide' : 'Show'}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 text-xs">
+            {isPasswordVisible ? "Hide" : "Show"}
           </button>
         </div>
       </div>
@@ -141,16 +160,14 @@ const LoginPage = () => {
       <div className="flex flex-col items-center space-y-3 mt-4">
         <button
           type="submit"
-          className="w-3/4 py-2 px-4 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-lg font-bold rounded-full hover:from-pink-600 hover:to-yellow-600 transition duration-300 focus:outline-none"
-        >
+          className="w-3/4 py-2 px-4 bg-gradient-to-r from-pink-500 to-yellow-500 text-white text-lg font-bold rounded-full hover:from-pink-600 hover:to-yellow-600 transition duration-300 focus:outline-none">
           Login
         </button>
 
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-3/4 py-2 mt-4 px-4 bg-gradient-to-r from-pink-800 to-yellow-700 text-white text-lg font-bold rounded-full hover:from-pink-900 hover:to-yellow-600 transition duration-300 focus:outline-none transform hover:scale-105 shadow-xl hover:shadow-2xl relative overflow-hidden"
-        >
+          className="w-3/4 py-2 mt-4 px-4 bg-gradient-to-r from-pink-800 to-yellow-700 text-white text-lg font-bold rounded-full hover:from-pink-900 hover:to-yellow-600 transition duration-300 focus:outline-none transform hover:scale-105 shadow-xl hover:shadow-2xl relative overflow-hidden">
           Login with Google
           <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-pink-800 to-yellow-700 opacity-30 rounded-full animate-spin"></span>
         </button>

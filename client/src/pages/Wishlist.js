@@ -1,89 +1,93 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { addToWishlist, removeFromWishlist, clearWishlist } from '../features/wishlistSlice';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addToWishlist,
+  removeFromWishlist,
+  clearWishlist,
+} from "../features/wishlistSlice";
 
 const Wishlist = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user); // Get the logged-in user from Redux state
-  const wishlist = useSelector((state) => state.wishlist.wishlists[user?.uid] || []); // Get the wishlist for the logged-in user
+  const user = useSelector((state) => state.user.user);
+  const wishlist = useSelector(
+    (state) => state.wishlist.wishlists[user?.uid] || []
+  );
 
-  // Update localStorage whenever the wishlist changes
+  // Load wishlist from localStorage on user login
   useEffect(() => {
     if (user?.uid) {
       const storedWishlist = localStorage.getItem(`wishlist_${user.uid}`);
       if (storedWishlist) {
         const parsedWishlist = JSON.parse(storedWishlist);
-        parsedWishlist.forEach((item) => {
-          dispatch(addToWishlist({ userId: user.uid, city: item }));
-        });
-      }
-    }
-  }, [dispatch, user?.uid]);
-  
-  // Initialize wishlist from localStorage on component mount
-  useEffect(() => {
-    if (user?.uid) {
-      const storedWishlist = localStorage.getItem(`wishlist_${user.uid}`);
-      if (storedWishlist) {
-        const parsedWishlist = JSON.parse(storedWishlist);
-        parsedWishlist.forEach((item) => {
-          dispatch(addToWishlist({ userId: user.uid, city: item }));
+        parsedWishlist.forEach((city) => {
+          dispatch(addToWishlist({ userId: user.uid, city }));
         });
       }
     }
   }, [dispatch, user?.uid]);
 
-  // Handle adding a city to the wishlist
-  const handleAddToWishlist = (city) => {
+  // Save wishlist to localStorage whenever wishlist changes
+  useEffect(() => {
     if (user?.uid) {
-      dispatch(addToWishlist({ userId: user.uid, city }));  // Pass userId to the action
+      localStorage.setItem(`wishlist_${user.uid}`, JSON.stringify(wishlist));
     }
-  };
+  }, [wishlist, user?.uid]);
 
   // Handle removing a city from the wishlist
-  const handleRemoveFromWishlist = (cityId) => {
+  const handleRemoveFromWishlist = (city) => {
     if (user?.uid) {
-      dispatch(removeFromWishlist({ userId: user.uid, cityId }));  // Pass userId to the action
+      dispatch(removeFromWishlist({ userId: user.uid, cityId: city.id }));
     }
   };
 
   // Handle clearing the wishlist
   const handleClearWishlist = () => {
     if (user?.uid) {
-      dispatch(clearWishlist({ userId: user.uid }));  // Pass userId to the action
+      dispatch(clearWishlist({ userId: user.uid }));
     }
   };
 
   return (
-    <div className="p-4">
+    <div className="p-">
       <h3 className="text-2xl font-bold mb-6 text-center">Your Wishlist</h3>
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {wishlist.map((item) => (
-          <div key={item.id} className="border p-4 rounded-xl shadow hover:shadow-lg transition">
-            <h4 className="text-lg font-semibold text-blue-700 mb-2">{item.name}</h4>
-            <p><strong>Population:</strong> {item.population?.toLocaleString() ?? 'N/A'}</p>
-            <p><strong>Latitude:</strong> {item.latitude}</p>
-            <p><strong>Longitude:</strong> {item.longitude}</p>
-            <p><strong>Elevation:</strong> {item.elevationMeters ?? 'N/A'}</p>
+          <div
+            key={item.id} // Use item.id as the unique key
+            className="border p-4 rounded-xl shadow hover:shadow-lg transition">
+            <h4 className="text-lg font-semibold text-blue-700 mb-2">
+              {item.name}
+            </h4>
+            <p>
+              <strong>Population:</strong>{" "}
+              {item.population?.toLocaleString() ?? "N/A"}
+            </p>
+            <p>
+              <strong>Latitude:</strong> {item.latitude ?? "N/A"}
+            </p>
+            <p>
+              <strong>Longitude:</strong> {item.longitude ?? "N/A"}
+            </p>
+            <p>
+              <strong>Elevation:</strong> {item.elevationMeters ?? "N/A"}
+            </p>
             <div className="mt-4 flex justify-end">
               <button
-                onClick={() => handleRemoveFromWishlist(item.id)}
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-              >
+                onClick={() => handleRemoveFromWishlist(item)}
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
                 Remove
               </button>
             </div>
           </div>
         ))}
       </div>
-  
+
       {wishlist.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
             onClick={handleClearWishlist}
-            className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md"
-          >
+            className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md">
             Clear Wishlist
           </button>
         </div>

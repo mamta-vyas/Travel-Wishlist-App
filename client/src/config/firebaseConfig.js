@@ -13,9 +13,9 @@ const firebaseConfig = {
   storageBucket: "travel-wishlist-app-1b984.firebasestorage.app",
   messagingSenderId: "163604187656",
   appId: "1:163604187656:web:ef67448c93e7ccab2edfbd",
-  measurementId: "G-25F32180E6"
+  measurementId: "G-25F32180E6",
 };
 
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
-export const analytics = getAnalytics( firebaseApp);
+export const analytics = getAnalytics(firebaseApp);

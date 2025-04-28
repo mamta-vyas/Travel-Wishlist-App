@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: null, // Stores the current user's data (uid, email, fullName)
@@ -7,7 +7,7 @@ const initialState = {
 };
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState,
   reducers: {
     setLoading: (state) => {
@@ -34,6 +34,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { setLoading, stopLoading, setUser, setError, logout } = userSlice.actions;
+export const { setLoading, stopLoading, setUser, setError, logout } =
+  userSlice.actions;
 
 export default userSlice.reducer;

@@ -1,11 +1,10 @@
-// firebaseAuth.js (middleware)
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 
 const verifyFirebaseToken = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]; // Get the token from the Authorization header
+  const token = req.headers.authorization?.split(" ")[1]; // Get the token from the Authorization header
 
   if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
+    return res.status(401).json({ error: "No token provided" });
   }
 
   try {
@@ -14,8 +13,8 @@ const verifyFirebaseToken = async (req, res, next) => {
     req.user = decodedToken; // Attach the user data to the request object
     next(); // Proceed to the next middleware/route handler
   } catch (error) {
-    console.error('Error verifying token:', error);
-    res.status(401).json({ error: 'Unauthorized' });
+    console.error("Error verifying token:", error);
+    res.status(401).json({ error: "Unauthorized" });
   }
 };
 
