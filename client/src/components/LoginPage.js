@@ -34,7 +34,7 @@ const LoginPage = () => {
       const token = await firebaseUser.getIdToken();
       console.log(token);
       const response = await axios.post(
-        "http://localhost:5000/api/user/login",
+        "https://travel-wishlist-app.onrender.com/api/user/login",
         {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -76,7 +76,7 @@ const LoginPage = () => {
       const token = await firebaseUser.getIdToken();
 
       const response = await axios.post(
-        "http://localhost:5000/api/user/google-login",
+        "https://travel-wishlist-app.onrender.com/api/user/google-login",
         {
           email: firebaseUser.email,
           firebaseUID: firebaseUser.uid,

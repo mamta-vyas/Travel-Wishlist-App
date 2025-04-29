@@ -6,7 +6,10 @@ const authRoutes = require("./routes/authRoutes");
 
 // ✅ Add this section to initialize Firebase Admin
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+
+// Replace escaped newlines with real newlines
+serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

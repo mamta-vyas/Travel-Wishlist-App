@@ -6,7 +6,7 @@ const UserStats = () => {
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/user/usercount");
+        const res = await fetch("https://travel-wishlist-app.onrender.com/api/user/usercount");
         const data = await res.json();
         setUserCount(data.totalUsers);
       } catch (err) {
