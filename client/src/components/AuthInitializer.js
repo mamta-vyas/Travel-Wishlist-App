@@ -24,7 +24,7 @@ const AuthInitializer = () => {
     });
 
     return () => unsubscribe();
-  }, [dispatch]);
+  }, [auth, dispatch]);
 
   return null;
 };
