@@ -19,7 +19,12 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://travelwishlist-app.netlify.app'
+}));
+
 app.use(express.json());
 
 // Mount your routes

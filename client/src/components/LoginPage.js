@@ -32,7 +32,7 @@ const LoginPage = () => {
       );
       const firebaseUser = userCredential.user;
       const token = await firebaseUser.getIdToken();
-      console.log(token);
+      // console.log(token);
       const response = await axios.post(
         "https://travel-wishlist-app.onrender.com/api/user/login",
         {

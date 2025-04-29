@@ -33,8 +33,8 @@ const SignUpPage = () => {
 
       const user = auth.currentUser;
       const idToken = await user.getIdToken(); // 👈 Get Firebase token here
-      console.log(idToken);
-      console.log(user);
+      // console.log(idToken);
+      // console.log(user);
       const userData = {
         uid: user.uid,
         email: user.email,
@@ -43,7 +43,8 @@ const SignUpPage = () => {
 
       dispatch(setUser(userData));
 
-      const response = await fetch("https://travel-wishlist-app.onrender.com/api/user/register", {
+      const response = 
+      await fetch("https://travel-wishlist-app.onrender.com/api/user/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

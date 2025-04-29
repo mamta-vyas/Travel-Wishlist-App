@@ -6,7 +6,7 @@ const User = require("../models/User");
 // POST /register (secure)
 router.post("/register", verifyFirebaseToken, async (req, res) => {
   try {
-    console.log("Received signup data from frontend:", req.body);
+    // console.log("Received signup data from frontend:", req.body);
     const { email, fullName } = req.body;
     const uid = req.user.uid; // From Firebase token
 
@@ -26,7 +26,7 @@ router.post("/register", verifyFirebaseToken, async (req, res) => {
 // POST /login (secure)
 router.post("/login", verifyFirebaseToken, async (req, res) => {
   try {
-    console.log("Received login data from frontend:", req.body);
+    // console.log("Received login data from frontend:", req.body);
     const { email, fullName } = req.body;
     const uid = req.user.uid;
 
@@ -46,7 +46,7 @@ router.post("/login", verifyFirebaseToken, async (req, res) => {
 // POST /google-login (secure)
 router.post("/google-login", verifyFirebaseToken, async (req, res) => {
   try {
-    console.log("Received Google login data from frontend:", req.body);
+    // console.log("Received Google login data from frontend:", req.body);
     const { email, fullName } = req.body;
     const uid = req.user.uid;
 
