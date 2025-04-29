@@ -3,4 +3,6 @@ serviceAccountKey.json
 *.key.json
 *.pem
 
+server/.env
+
 /node_modules
