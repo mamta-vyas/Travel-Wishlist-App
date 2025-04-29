@@ -8,67 +8,67 @@ It offers a seamless experience where users can sign up, explore cities, see wea
 Travel-Wishlist-App/
 ├── README.md
 ├── client
-│   ├── firebase.json
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── public
-│   │   ├── 404.html
-│   │   ├── favicon.ico
-│   │   ├── index.html
-│   │   ├── logo192.png
-│   │   ├── logo512.png
-│   │   ├── manifest.json
-│   │   └── robots.txt
-│   ├── src
-│   │   ├── App.css
-│   │   ├── App.js
-│   │   ├── App.test.js
-│   │   ├── app
-│   │   │   └── store.js
-│   │   ├── components
-│   │   │   ├── AuthInitializer.js
-│   │   │   ├── Dashboard.js
-│   │   │   ├── DestinationDetails.js
-│   │   │   ├── Header.js
-│   │   │   ├── LoginPage.js
-│   │   │   ├── SearchBar.js
-│   │   │   ├── SignUpPage.js
-│   │   │   └── UserStats.js
-│   │   ├── config
-│   │   │   └── firebaseConfig.js
-│   │   ├── features
-│   │   │   ├── userSlice.js
-│   │   │   └── wishlistSlice.js
-│   │   ├── images
-│   │   │   ├── Background.webp
-│   │   │   └── logo.jpeg
-│   │   ├── index.css
-│   │   ├── index.js
-│   │   ├── logo.svg
-│   │   ├── pages
-│   │   │   ├── About.js
-│   │   │   ├── Contact.js
-│   │   │   ├── Home.js
-│   │   │   ├── LandingPage.js
-│   │   │   ├── UserInfo.js
-│   │   │   └── Wishlist.js
-│   │   ├── reportWebVitals.js
-│   │   └── setupTests.js
-│   └── tailwind.config.js
+│ ├── firebase.json
+│ ├── package-lock.json
+│ ├── package.json
+│ ├── public
+│ │ ├── 404.html
+│ │ ├── favicon.ico
+│ │ ├── index.html
+│ │ ├── logo192.png
+│ │ ├── logo512.png
+│ │ ├── manifest.json
+│ │ └── robots.txt
+│ ├── src
+│ │ ├── App.css
+│ │ ├── App.js
+│ │ ├── App.test.js
+│ │ ├── app
+│ │ │ └── store.js
+│ │ ├── components
+│ │ │ ├── AuthInitializer.js
+│ │ │ ├── Dashboard.js
+│ │ │ ├── DestinationDetails.js
+│ │ │ ├── Header.js
+│ │ │ ├── LoginPage.js
+│ │ │ ├── SearchBar.js
+│ │ │ ├── SignUpPage.js
+│ │ │ └── UserStats.js
+│ │ ├── config
+│ │ │ └── firebaseConfig.js
+│ │ ├── features
+│ │ │ ├── userSlice.js
+│ │ │ └── wishlistSlice.js
+│ │ ├── images
+│ │ │ ├── Background.webp
+│ │ │ └── logo.jpeg
+│ │ ├── index.css
+│ │ ├── index.js
+│ │ ├── logo.svg
+│ │ ├── pages
+│ │ │ ├── About.js
+│ │ │ ├── Contact.js
+│ │ │ ├── Home.js
+│ │ │ ├── LandingPage.js
+│ │ │ ├── UserInfo.js
+│ │ │ └── Wishlist.js
+│ │ ├── reportWebVitals.js
+│ │ └── setupTests.js
+│ └── tailwind.config.js
 └── server
-    ├── config
-    │   └── firebaseAdmin.js
-    ├── middleware
-    │   └── firebaseAuth.js
-    ├── models
-    │   └── User.js
-    ├── package-lock.json
-    ├── package.json
-    ├── routes
-    │   ├── authRoutes.js
-    │   └── wishlist.js
-    ├── server.js
-    └── serviceAccountKey.json
+├── config
+│ └── firebaseAdmin.js
+├── middleware
+│ └── firebaseAuth.js
+├── models
+│ └── User.js
+├── package-lock.json
+├── package.json
+├── routes
+│ ├── authRoutes.js
+│ └── wishlist.js
+├── server.js
+└── serviceAccountKey.json
 
 🔥 Key Features
 
@@ -95,7 +95,6 @@ Travel-Wishlist-App/
 🎨 Intuitive and Attractive UI with Tailwind CSS
 
 🖼️ One-place dashboard: View everything about a city without switching apps
-
 
 🛠 Tech Stack
 
@@ -124,7 +123,6 @@ Frontend (React.js - Client)
 
 🗺️ Map Integration with optimized rendering using time delays for smooth user experience
 
-
 Backend (Node.js/Express - Server)
 🚀 Express.js server with REST API architecture
 
@@ -132,33 +130,33 @@ Backend (Node.js/Express - Server)
 
 🛢️ MongoDB with Mongoose for user data storage
 
-
 📥 How to Run the Project
+
 1. Clone the Repository
-git clone https://github.com/mamta-vyas/Travel-Wishlist-App.git
-cd Travel-Wishlist-App
+   git clone https://github.com/mamta-vyas/Travel-Wishlist-App.git
+   cd Travel-Wishlist-App
 
 2. Setup Firebase (Client Side)
-Create a Firebase project at Firebase Console
-Enable Email/Password and Google authentication
-Copy the config keys to client/src/config/firebaseConfig.js:
+   Create a Firebase project at Firebase Console
+   Enable Email/Password and Google authentication
+   Copy the config keys to client/src/config/firebaseConfig.js:
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+apiKey: "YOUR_API_KEY",
+authDomain: "YOUR_PROJECT.firebaseapp.com",
+projectId: "YOUR_PROJECT_ID",
+storageBucket: "YOUR_PROJECT.appspot.com",
+messagingSenderId: "YOUR_SENDER_ID",
+appId: "YOUR_APP_ID",
 };
 
 3. Setup Firebase Admin (Server Side)
-Generate a Service Account Key from Firebase Console
-Save it as server/serviceAccountKey.json
-Import it in server/config/firebaseAdmin.js to initialize Firebase Admin SDK
+   Generate a Service Account Key from Firebase Console
+   Save it as server/serviceAccountKey.json
+   Import it in server/config/firebaseAdmin.js to initialize Firebase Admin SDK
 
 4. Setup Environment Variables
-Create a .env file in server/ with:
+   Create a .env file in server/ with:
 
 MONGO_URI=your_mongodb_uri
 PORT=5000
@@ -166,14 +164,14 @@ PORT=5000
 Make sure MongoDB is running locally or connected to Atlas.
 
 5. Install Client Dependencies and Run
-cd client
-npm install
-npm start
+   cd client
+   npm install
+   npm start
 
 6. Install Server Dependencies and Run
-cd server
-npm install
-npm run dev
+   cd server
+   npm install
+   npm run dev
 
 ⚙️ Improvements and Optimizations Done
 🧹 Fixed Map Loading: Added a timeout delay to ensure smoother map rendering when many cities are loaded.
