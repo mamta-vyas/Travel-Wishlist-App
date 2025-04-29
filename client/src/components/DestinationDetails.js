@@ -2,6 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import markerIcon from '../images/marker-icon.png';
+import markerShadow from '../images/marker-shadow.png';
+
 
 const DestinationDetails = () => {
   const location = useLocation();
@@ -95,10 +98,9 @@ const DestinationDetails = () => {
   // Effect to initialize the map when lat or lon changes
   useEffect(() => {
     const mapTilerKey = process.env.REACT_APP_MAPTILER_API_KEY;
-
+  
     if (!lat || !lon) return;
-
-    // Add a delay before initializing the map
+  
     const mapDelay = setTimeout(() => {
       if (mapRef.current && !leafletMap.current) {
         leafletMap.current = L.map(mapRef.current, {
@@ -108,28 +110,36 @@ const DestinationDetails = () => {
           zoomControl: true,
           crs: L.CRS.EPSG3857,
         });
-
+  
         L.tileLayer(
           `https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=${mapTilerKey}`,
           {
             attribution: "&copy; OpenStreetMap contributors &copy; MapTiler",
           }
         ).addTo(leafletMap.current);
-      }
-
-      if (leafletMap.current) {
-        leafletMap.current.setView([lat, lon], 14);
-        const marker = L.marker([lat, lon]).addTo(leafletMap.current);
+  
+        // Using local images for marker icons
+        const customIcon = L.icon({
+          iconUrl: markerIcon,
+          shadowUrl: markerShadow,
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41],
+        });
+        
+  
+        const marker = L.marker([lat, lon], { icon: customIcon }).addTo(leafletMap.current);
         marker
           .bindPopup(`<b>You're here!</b><br>Lat: ${lat}, Lon: ${lon}`)
           .openPopup();
-
+  
         setTimeout(() => {
           leafletMap.current.invalidateSize();
         }, 300);
       }
-    }, 3000); // Delay of 1000ms (1 second)
-
+    }, 3000); // Delay of 3000ms (3 seconds)
+  
     return () => {
       clearTimeout(mapDelay); // Cleanup the timeout on component unmount or when lat/lon changes
       if (leafletMap.current) {
@@ -138,6 +148,7 @@ const DestinationDetails = () => {
       }
     };
   }, [lat, lon]);
+  
 
   if (loading) return <div className="text-center mt-10">Fetching data...</div>;
 
