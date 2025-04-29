@@ -5,7 +5,7 @@ const Contact = () => {
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-purple-700 mb-4">
           Contact Us 📬
         </h2>
-        <p className="text-sky-600 font-semibold text-center mb-4 text-sm sm:text-base md:text-lg">
+        <p className="text-sky-600 font-semibold text-center mb-4 text-xl sm:text-base md:text-lg">
           Have a question, suggestion, or just want to say hello? We’d love to
           hear from you!
         </p>

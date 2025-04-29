@@ -175,7 +175,7 @@ const Home = () => {
 
         {/* Add professional line while loading */}
         {loading && (
-          <p className="text-center text-sm font-semibold mb-4 bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-transparent bg-clip-text animate-pulse">
+          <p className="text-center text-base font-semibold lg:text-lg lg:font-bold mb-4 bg-gradient-to-r from-teal-500 via-indigo-500 to-pink-500 text-transparent bg-clip-text animate-pulse">
             ⏳ Please bear with us as we search for the cities. It might take a
             few moments. Thank you for your patience! 🌍
           </p>
@@ -185,7 +185,7 @@ const Home = () => {
           <button
             onClick={handleSearchClick}
             disabled={loading}
-            className={`w-1/3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:opacity-90 ${
+            className={`w-1/3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-lg shadow-md hover:opacity-90 ${
               loading ? "opacity-50 cursor-not-allowed" : ""
             }`}>
             🔍 {loading ? "Searching..." : "Search Cities"}

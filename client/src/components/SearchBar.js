@@ -72,7 +72,7 @@ const SearchBar = () => {
   return (
     <div className="flex justify-center items-center py-4 px-4 max-w-2xl mx-auto">
       <div className="w-full">
-        <p className="text-center text-lg mb-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-transparent bg-clip-text">
+        <p className="text-center text-xl font-bold mb-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-transparent bg-clip-text">
           You can search for a country code and its corresponding region code to
           get relevant information.
         </p>

@@ -22,7 +22,7 @@ const LandingPage = () => {
         backgroundAttachment: "fixed",
       }}>
       <div
-        className="w-full max-h-[600px] max-w-md mt-4 px-8 pt-2 space-y-2 bg-white shadow-md rounded-lg bg-opacity-60 overflow-hidden"
+        className="w-full max-h-[650px] max-w-md mt-4 px-8 pt-2 space-y-2 bg-white shadow-md rounded-lg bg-opacity-60 overflow-hidden"
         style={{ height: "auto" }}>
         {/* Logo Section */}
         <div className="text-center mb-2">
